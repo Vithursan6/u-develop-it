@@ -22,39 +22,49 @@ const db = mysql.createConnection(
     console.log('Connected to the election database.')
 );
 
-// //GET all candidates
-// app.get('/api/candidates', (req, res) => {
-//     const sql = `SELECT * FROM candidates`;
+//GET all candidates
+app.get('/api/candidates', (req, res) => {
+    const sql = `SELECT candidates.*, parties.name
+                AS party_name
+                FROM candidates
+                LEFT JOIN parties
+                ON candidates.party_id = parties.id`;
 
-//     db.query(sql, (err, rows) => {
-//         if(err) {
-//             res.status(500).json({ error: err.message });
-//             return;
-//         }
-//         res.json({
-//             message: 'success',
-//             data: rows
-//         });
-//     });
-// });
+    db.query(sql, (err, rows) => {
+        if(err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({
+            message: 'success',
+            data: rows
+        });
+    });
+});
 
 
-// // GET a single candidate
-// app.get('/api/candidate/:id', (req, res) => {
-//     const sql = `SELECT * FROM candidates WHERE id = ?`;
-//     const params = [req.params.id];
+// GET a single candidate
+app.get('/api/candidate/:id', (req, res) => {
+    const sql = `SELECT candidates.*, parties.name
+                AS party_name
+                FROM candidates
+                LEFT JOIN parties
+                ON candidates.party_id = parties.id
+                WHERE candidates.id = ?`;
+                
+    const params = [req.params.id];
 
-//     db.query(sql, params, (err, row) => {
-//         if (err){
-//             res.status(400).json({ error: err.message });
-//             return;
-//         }
-//         res.json({
-//             message: 'success',
-//             data: row
-//         });
-//     });
-// });
+    db.query(sql, params, (err, row) => {
+        if (err){
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        res.json({
+            message: 'success',
+            data: row
+        });
+    });
+});
 
 
 // //Delete a candidate
